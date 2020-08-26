@@ -110,4 +110,20 @@ ISHED -j ACCEPT
 # iptables -A OUTPUT -s LocalIP -p tcp -m state --state ESTABLISHED -j ACCEPT
 ```
 
+```
+~]# iptables -vnL
+Chain INPUT (policy DROP 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+  573 55742 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED
+    2   228 ACCEPT     tcp  --  *      *       0.0.0.0/0            172.16.214.129       multiport dports 21,22,80 state NEW
+    0     0 ACCEPT     icmp --  *      *       0.0.0.0/0            172.16.214.129       icmptype 8 state NEW,ESTABLISHED
+
+Chain FORWARD (policy DROP 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain OUTPUT (policy DROP 7 packets, 2296 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+  414 71722 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            state ESTABLISHED
+```
+
 ![](./images/iptables_ftp.png)
