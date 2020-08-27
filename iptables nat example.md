@@ -65,3 +65,12 @@ pkts bytes target     prot opt in     out     source               destination
 Chain OUTPUT (policy ACCEPT 49 packets, 7260 bytes)
 pkts bytes target     prot opt in     out     source               destination     
 ```
+
+#### Network Address Translation(网络地址转换)
+
+```
+// SNAT: 只修改请求报文的源地址，发生在 POSTROUTING
+
+// DNAT：只修改请求报文的目标地址，发生在 PREROUTING
+
+```
