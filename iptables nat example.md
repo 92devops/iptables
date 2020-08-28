@@ -69,8 +69,20 @@ pkts bytes target     prot opt in     out     source               destination
 #### Network Address Translation(网络地址转换)
 
 ```
-// SNAT: 只修改请求报文的源地址，发生在 POSTROUTING
+// SNAT: 只修改请求报文的源地址，发生在 POSTROUTING（内网访问外网）,我们删除路由规则后，添加 snat 规则，还是内网还是可以正常访问外网
+ip route del  192.168.100.0/24 via 172.16.214.130 dev eth0
+~]# iptables -t nat -A POSTROUTING -s 192.168.100.0/24  ! -d 192.168.100.0/24  -j SNAT --to-source 172.16.214.130
+realserver ~]# curl  172.16.214.129 # 验证
 
-// DNAT：只修改请求报文的目标地址，发生在 PREROUTING
+// DNAT：只修改请求报文的目标地址，发生在 PREROUTING（外网访问内网）
+ ~]# iptables -t nat -A PREROUTING -d 172.16.214.130 -p tcp --dport 80 -j DNAT  --to-destination 192.168.100.20
+ client ~]# curl 172.16.214.130
 
+// 假设内网 ssh 端口为 22122，那么我们可以通过一下规则实现 ssh 转发
+~]# iptables -t nat -A PREROUTING -d 172.16.214.130 -p tcp --dport 22122  -j DNAT  --to-destination 192.168.100.20:22122
+➜  ~ ssh root@172.16.214.130 -p 22122
+
+// MASQUERADE：地址伪装(内网访问外网)，当前系统用的是ADSL/3G/4G动态拨号方式，那么每次拨号，出口IP都会改变，SNAT就会有局限性，
+~]# iptables -t nat -A POSTROUTING -s 192.168.100.0/24  ! -d 192.168.100.0/24  -j MASQUERADE
+realserver ~]# curl  172.16.214.129
 ```
